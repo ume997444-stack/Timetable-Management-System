@@ -10,8 +10,8 @@ It allows users to add, update, delete, and search timetable records efficiently
 - 📅 Clean and responsive frontend
 
 ## Tech Stack
-- Python
-- MySQL
+- Python(flask)
+- MySQL(Xampp)
 - HTML / CSS / JavaScript
 
 ## Project Info
