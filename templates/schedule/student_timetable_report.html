@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Student Timetable Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --info-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --border-radius: 12px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #2c3e50;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+
+        .student-card {
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background: white;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            background: var(--primary-gradient);
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.3rem;
+            padding: 1.5rem 2rem;
+            border: none;
+            position: relative;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--secondary-gradient);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .timetable-grid {
+            display: grid;
+            grid-template-columns: 160px repeat(5, 1fr);
+            gap: 2px;
+            background: #e9ecef;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .timetable-grid > div {
+            background-color: white;
+            padding: 1rem 0.75rem;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 80px;
+            transition: all 0.2s ease;
+        }
+
+        .timetable-header {
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 700;
+            text-align: center;
+            font-size: 1rem;
+            padding: 1rem 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .time-slot {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-weight: 600;
+            color: #495057;
+            border-left: 4px solid #007bff;
+        }
+
+        .course-cell {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(33, 150, 243, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--success-gradient);
+        }
+
+        .course-cell:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+        }
+
+        .course-name {
+            font-weight: 700;
+            color: #1565c0;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .course-name i {
+            color: #2196f3;
+        }
+
+        .time-info {
+            font-size: 0.8rem;
+            color: #546e7a;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .faculty-info {
+            font-size: 0.8rem;
+            color: #424242;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .room-info {
+            font-size: 0.8rem;
+            color: #424242;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .no-schedule {
+            color: #6c757d;
+            font-style: italic;
+            font-size: 1.1rem;
+            padding: 2rem 0;
+            text-align: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: var(--border-radius);
+            border: 2px dashed #dee2e6;
+        }
+
+        .filter-card {
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            border-radius: var(--border-radius);
+            background: white;
+            padding: 2rem;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--secondary-gradient);
+        }
+
+        .filter-label {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            background: var(--primary-gradient);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #dee2e6;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .timetable-grid {
+                grid-template-columns: 120px repeat(5, 1fr);
+                font-size: 0.8rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .course-cell {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid py-4">
+    <h1 class="text-center">Timetable Management System</h1>
+    <div class="filter-card">
+        <form method="get" action="{{ url_for('student_timetable_report') }}" class="row g-3 align-items-center justify-content-center">
+            <div class="col-auto">
+                <label for="department" class="filter-label">Department:</label>
+                <select id="department" name="department" class="form-select">
+                    <option value="All" {% if department == 'All' %}selected{% endif %}>All Departments</option>
+                    {% for dept in departments %}
+                        <option value="{{ dept.DepartmentID }}" {% if department == dept.DepartmentID|string %}selected{% endif %}>{{ dept.DepartmentName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <label for="program" class="filter-label">Program:</label>
+                <select id="program" name="program" class="form-select">
+                    <option value="All" {% if program == 'All' %}selected{% endif %}>All Programs</option>
+                    {% for p in programs %}
+                        {% if department == 'All' or p.DepartmentID == department|string %}
+                        <option value="{{ p.ProgramID }}" {% if program == p.ProgramID|string %}selected{% endif %}>{{ p.ProgramName }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <label for="semester" class="filter-label">Semester:</label>
+                <select id="semester" name="semester" class="form-select">
+                    <option value="All" {% if semester == 'All' %}selected{% endif %}>All Semesters</option>
+                    {% for s in semesters %}
+                        <option value="{{ s.SemesterID }}" {% if semester == s.SemesterID|string %}selected{% endif %}>{{ s.SemesterName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <label for="day" class="filter-label">Day:</label>
+                <select id="day" name="day" class="form-select">
+                    <option value="All" {% if day == 'All' %}selected{% endif %}>All Days</option>
+                    {% for d in days %}
+                        <option value="{{ d }}" {% if day == d %}selected{% endif %}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary mt-4">Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="timetable-container">
+        {% if timetable_by_semester %}
+            {% for sem_id, sem_data in timetable_by_semester.items() %}
+                <div class="semester-section mb-5">
+                    <h4 class="text-center mb-4">{{ sem_data.SemesterName }} - Student Timetable</h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center timetable-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Day / Time</th>
+                                    {% for slot in time_slots %}
+                                        <th>{{ slot.StartTime }} - {{ slot.EndTime }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for day_name in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] %}
+                                    <tr>
+                                        <td class="fw-bold">{{ day_name }}</td>
+                                        {% for slot in time_slots %}
+                                            <td>
+                                                {% if sem_data.timetable[day_name][slot.SlotID] %}
+                                                    <div class="course-info">
+                                                        <strong>{{ sem_data.timetable[day_name][slot.SlotID].CourseName }}</strong><br/>
+                                                        <small>{{ sem_data.timetable[day_name][slot.SlotID].FacultyName }}</small><br/>
+                                                        <small>Room: {{ sem_data.timetable[day_name][slot.SlotID].RoomNumber }}</small>
+                                                    </div>
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                <h5>No timetable data found</h5>
+                <p>Please check your filters or contact administrator.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

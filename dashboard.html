@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: #333;
+        }
+        nav {
+          background-color: #007bff;
+          height: 60px;
+          padding: 0 20px;
+          display: flex;
+          align-items: center;
+          position: relative;
+          z-index: 1000;
+          color: white;
+          font-size: 24px;
+          font-weight: bold;
+          font-family: Arial, sans-serif;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        nav .m-menu__checkbox {
+          display: none;
+        }
+        nav label.m-menu__toggle {
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          width: 30px;
+          height: 22px;
+        }
+        nav label.m-menu__toggle span {
+          display: block;
+          height: 4px;
+          background-color: white;
+          border-radius: 2px;
+        }
+        nav .m-menu {
+          position: fixed;
+          top: 0;
+          left: 0;
+          max-width: 300px;
+          width: calc(100vw - 30px);
+          height: 100%;
+          transform: translate3d(-450px, 0, 0);
+          transition: transform 0.35s;
+          z-index: 999;
+          overflow: hidden;
+          background-color: #0056b3;
+          color: white;
+          padding-top: 60px;
+          padding-right: 20px;
+          box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        nav .m-menu__checkbox:checked ~ .m-menu {
+          transform: translate3d(0, 0, 0);
+        }
+        nav .m-menu__checkbox:checked ~ .m-menu__overlay {
+          display: block;
+        }
+        nav .m-menu__overlay {
+          background-color: rgba(103, 103, 103, 0.5);
+          position: fixed;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 998;
+          display: none;
+        }
+        nav .m-menu ul {
+          height: 100%;
+          overflow-y: auto;
+          list-style: none;
+          padding-left: 0;
+          margin: 0;
+        }
+        nav .m-menu ul li {
+          padding: 15px 20px;
+          cursor: pointer;
+        }
+        nav .m-menu ul li:hover {
+          background-color: #004494;
+        }
+        nav .m-menu ul li a {
+          color: white;
+          text-decoration: none;
+          display: block;
+        }
+        nav .m-menu ul li label.a-label__chevron::after {
+          content: "";
+          position: absolute;
+          display: inline-block;
+          height: 10px;
+          width: 10px;
+          border-color: white;
+          border-style: solid;
+          border-width: 1px 1px 0 0;
+          transform: rotate(45deg);
+          top: 50%;
+          margin-top: -5px;
+          right: 16px;
+        }
+        nav .m-menu ul li .-invisible {
+          border-bottom: 0;
+        }
+        nav .m-menu .m-menu label.m-menu__toggle {
+          display: flex;
+          border-bottom: 0;
+          padding: 0;
+          box-sizing: content-box;
+        }
+        nav .m-menu__checkbox:checked ~ .m-menu__overlay {
+          display: block;
+        }
+        .content {
+            margin-left: 0;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+        h1 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 3em;
+        }
+        .attendance-section {
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        table th {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <input type="checkbox" id="menu-toggle" class="m-menu__checkbox" />
+        <label for="menu-toggle" class="m-menu__toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+        <div class="m-menu__overlay"></div>
+        <div class="m-menu">
+            <div style="position: absolute; top: 10px; right: 10px; cursor: pointer;">
+                <label for="menu-toggle" style="font-size: 20px; color: white; user-select: none;">&#10005;</label> <!-- Cross (X) sign -->
+            </div>
+            <ul>
+                <li><a href="/semesters">Semesters</a></li>
+                <li><a href="/attendance">Semester-wise Attendance</a></li>
+                <li><a href="/departments">Departments</a></li>
+                <li><a href="/faculty">Faculty</a></li>
+                <li><a href="/students">Students</a></li>
+                <li><a href="/offered_programs">Offered Programs</a></li>
+                <li><a href="/offered_courses">Offered Courses</a></li>
+                <li><a href="/enrolled_students">Enrolled Students</a></li>
+                <li><a href="/enrolled_teachers">Enrolled Teachers</a></li>
+                <li><a href="/sessions">Sessions</a></li>
+                <li><a href="/courses">Courses</a></li>
+                <li><a href="/rooms">Rooms</a></li>
+                <li><a href="/time_slots">Time Slots</a></li>
+                <li><a href="/assign_courses_to_student">Assign Courses to Students</a></li>
+                <li><a href="/timetable/student_report">Student Timetable Report</a></li>
+                <li><a href="/weekly_timetable">Weekly Timetable</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+    <a href="/logout" style="position: fixed; top: 10px; right: 10px; background-color: #dc3545; color: white; padding: 10px 15px; border-radius: 5px; font-weight: bold; text-decoration: none; z-index: 1100;">Logout</a>
+    <div class="content" id="content">
+        <h1>Class Scheduler</h1>
+        <div class="attendance-section">
+            <div style="display: flex; justify-content: center; gap: 40px; margin-top: 40px;">
+                <a href="/timetable/room" style="padding: 20px 40px; background-color: #007bff; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 1.2em; width: 200px; text-align: center; display: inline-block; transition: background-color 0.3s ease;">Timetable</a>
+                <a href="/timetable/faculty" style="padding: 20px 40px; background-color: #007bff; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 1.2em; width: 200px; text-align: center; display: inline-block; transition: background-color 0.3s ease;">Faculty-wise Timetable</a>
+               
+                <a href="/timetable/student_report" style="padding: 20px 40px; background-color: #007bff; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 1.2em; width: 200px; text-align: center; display: inline-block; transition: background-color 0.3s ease;">Student Timetable Report</a>
+                <a href="/weekly_timetable" style="padding: 20px 40px; background-color: #007bff; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 1.2em; width: 200px; text-align: center; display: inline-block; transition: background-color 0.3s ease;">Weekly Timetable</a>
+                <a href="/departments" style="padding: 20px 40px; background-color: #007bff; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 1.2em; width: 200px; text-align: center; display: inline-block; transition: background-color 0.3s ease;">Departments</a>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 30px; margin-top: 50px;">
+                <div style="background-color: #007bff; color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); text-align: center; width: 200px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 150px;">
+                    <h2 style="margin: 0;">{{ total_offered_programs }}</h2>
+                    <p style="margin: 5px 0;">Total Offered Programs</p>
+                    <a href="/offered_programs" style="background-color: white; color: #007bff; font-weight: bold; padding: 8px 16px; border-radius: 5px; text-decoration: none; width: 100px; text-align: center;">Manage</a>
+                </div>
+                <div style="background-color: #007bff; color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); text-align: center; width: 200px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 150px;">
+                    <h2 style="margin: 0;">{{ total_rooms }}</h2>
+                    <p style="margin: 5px 0;">Total Rooms</p>
+                    <a href="/rooms" style="background-color: white; color: #007bff; font-weight: bold; padding: 8px 16px; border-radius: 5px; text-decoration: none; width: 100px; text-align: center;">Manage</a>
+                </div>
+                <div style="background-color: #007bff; color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); text-align: center; width: 200px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 150px;">
+                    <h2 style="margin: 0;">{{ total_sessions }}</h2>
+                    <p style="margin: 5px 0;">Total Sessions</p>
+                    <a href="/sessions" style="background-color: white; color: #007bff; font-weight: bold; padding: 8px 16px; border-radius: 5px; text-decoration: none; width: 100px; text-align: center;">Manage</a>
+                </div>
+                <div style="background-color: #28a745; color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); text-align: center; width: 200px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 150px;">
+                    <h2 style="margin: 0;">Timetable</h2>
+                    <p style="margin: 5px 0;">Class Schedule</p>
+                    <a href="/timetable/room" style="background-color: white; color: #28a745; font-weight: bold; padding: 8px 16px; border-radius: 5px; text-decoration: none; width: 100px; text-align: center;">View</a>
+                </div>
+                <div style="background-color: #dc3545; color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); text-align: center; width: 200px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 150px;">
+                    <h2 style="margin: 0;">Faculty</h2>
+                    <p style="margin: 5px 0;">Faculty Schedule</p>
+                    <a href="/timetable/faculty" style="background-color: white; color: #dc3545; font-weight: bold; padding: 8px 16px; border-radius: 5px; text-decoration: none; width: 100px; text-align: center;">View</a>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px;">
+            <a href="/timetable/room" style="padding: 20px 40px; background-color: #007bff; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 1.2em;">View Full Timetable</a>
+        </div>
+</body>
+</html>

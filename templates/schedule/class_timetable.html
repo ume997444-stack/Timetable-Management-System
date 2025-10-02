@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Timetable</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .timetable-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        .timetable-header {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .timetable-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .table th {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 15px;
+        }
+        .room-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+        }
+        .class-slot {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            padding: 8px;
+            margin: 3px;
+            min-height: 100px;
+            transition: all 0.3s ease;
+        }
+        .class-slot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .course-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+        .teacher-name {
+            color: #6c757d;
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+        .program-info {
+            color: #17a2b8;
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+        .time-info {
+            color: #dc3545;
+            font-size: 10px;
+            margin-bottom: 6px;
+        }
+        .free-slot {
+            background: #d4edda;
+            color: #155724;
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .free-slot-link {
+            display: block;
+            text-decoration: none;
+        }
+        .free-slot-link:hover .free-slot {
+            background: #c3e6cb;
+        }
+        .action-buttons {
+            margin-top: 8px;
+        }
+        .btn-sm {
+            padding: 3px 8px;
+            font-size: 11px;
+            margin: 2px;
+        }
+        @media (max-width: 768px) {
+            .class-slot {
+                min-height: 90px;
+                padding: 6px;
+            }
+            .course-name {
+                font-size: 11px;
+            }
+            .teacher-name, .program-info, .time-info {
+                font-size: 9px;
+            }
+            .btn-sm {
+                padding: 2px 5px;
+                font-size: 9px;
+                margin: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<div class="timetable-container">
+    <div class="timetable-header">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-primary mb-0">📅 Room wise Timetable</h1>
+            <div>
+                <a href="{{ url_for('add_class') }}" class="btn btn-primary me-2">
+                    ➕ Add Class
+                </a>
+               
+            </div>
+        </div>
+    <form method="get">
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label>Program</label>
+                <select name="program_id" class="form-control">
+                    <option value="">All Programs</option>
+                    {% for p in programs %}
+                        <option value="{{ p.ProgramID }}" {% if program_id==p.ProgramID %}selected{% endif %}>{{ p.ProgramName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>Semester</label>
+                <select name="semester_id" class="form-control">
+                    <option value="">All Semesters</option>
+                    {% for s in semesters %}
+                        <option value="{{ s.SemesterID }}" {% if semester_id==s.SemesterID %}selected{% endif %}>{{ s.SemesterName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Day</label>
+                <select name="day" class="form-control">
+                    {% for d in ['Monday','Tuesday','Wednesday','Thursday','Friday'] %}
+                        <option value="{{ d }}" {% if d==day %}selected{% endif %}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+            </div>
+            <div class="col-md-2">
+                <label>&nbsp;</label>
+                <a href="{{ url_for('room_timetable') }}" class="btn btn-secondary w-100">Clear Filters</a>
+            </div>
+        </div>
+    </form>
+    <div class="timetable-table">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="room-header">Room / Time Slot</th>
+                    {% for slot in slots %}
+                        <th>
+                            {% if slot.StartTime.__class__.__name__ == 'time' %}
+                                {{ slot.StartTime.strftime('%H:%M') }} - {{ slot.EndTime.strftime('%H:%M') }}
+                            {% elif slot.StartTime.__class__.__name__ == 'timedelta' %}
+                                {{ (slot.StartTime.total_seconds() // 3600)|int }}:{{ '%02d' % ((slot.StartTime.total_seconds() % 3600) // 60)|int }}
+                                -
+                                {{ (slot.EndTime.total_seconds() // 3600)|int }}:{{ '%02d' % ((slot.EndTime.total_seconds() % 3600) // 60)|int }}
+                            {% else %}
+                                {{ slot.StartTime|string }} - {{ slot.EndTime|string }}
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in rooms %}
+                <tr>
+                    <td class="room-header">{{ room.RoomNumber }}</td>
+                    {% for slot in slots %}
+                        {% set sc = scheduled_lookup.get((slot.SlotID, room.RoomID)) %}
+                        <td>
+                            {% if sc %}
+                                <div class="class-slot">
+                                    <div class="course-name">{{ sc.CourseName }}</div>
+                                    <div class="teacher-name">👨‍🏫 {{ sc.FirstName }} {{ sc.LastName }}</div>
+                                    <div class="program-info">🎓 Program: {{ sc.ProgramName if sc.ProgramName else 'N/A' }}</div>
+                                    <div class="semester-info">📚 Semester: {{ sc.SemesterName if sc.SemesterName else 'N/A' }}</div>
+                                    <div class="action-buttons">
+                                        <a href="{{ url_for('edit_schedule', schedule_id=sc['ScheduleID']) }}" class="btn btn-sm btn-warning">✏️ Edit</a>
+                                        <form method="post" action="{{ url_for('delete_schedule', schedule_id=sc['ScheduleID']) }}" style="display:inline;">
+                                        <input type="hidden" name="redirect_url" value="{{ url_for('room_timetable') }}">
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this schedule?');">🗑️ Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a href="{{ url_for('add_class', room_id=room.RoomID, slot_id=slot.SlotID, day_of_week=day, program_id=program_id, semester_id=semester_id) }}" class="free-slot-link">
+                                    <div class="free-slot">✅ Free</div>
+                                </a>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

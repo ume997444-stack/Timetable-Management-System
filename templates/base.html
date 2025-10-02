@@ -1,0 +1,322 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Timetable Management System{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    /* Sidebar styles from dashboard.html */
+    .sidebar-list li {
+      opacity: 0;
+      transform: translateX(-30px);
+      animation: slideIn 0.5s forwards;
+    }
+    .sidebar-list li:nth-child(1) { animation-delay: 0.05s; }
+    .sidebar-list li:nth-child(2) { animation-delay: 0.10s; }
+    .sidebar-list li:nth-child(3) { animation-delay: 0.15s; }
+    .sidebar-list li:nth-child(4) { animation-delay: 0.20s; }
+    .sidebar-list li:nth-child(5) { animation-delay: 0.25s; }
+    .sidebar-list li:nth-child(6) { animation-delay: 0.30s; }
+    .sidebar-list li:nth-child(7) { animation-delay: 0.35s; }
+    .sidebar-list li:nth-child(8) { animation-delay: 0.40s; }
+    .sidebar-list li:nth-child(9) { animation-delay: 0.45s; }
+    .sidebar-list li:nth-child(10) { animation-delay: 0.50s; }
+    @keyframes slideIn {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    .sidebar-list li a {
+      position: relative;
+      overflow: hidden;
+    }
+    .sidebar-list li a::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0;
+      background: #eebbc3;
+      z-index: 0;
+      transition: width 0.3s;
+    }
+    .sidebar-list li a:hover::before {
+      width: 100%;
+    }
+    .sidebar-list li a:hover {
+      color: #232946;
+      z-index: 1;
+    }
+    .filter-bar {
+      margin: 10px 0 10px 32px;
+      padding: 8px 16px;
+      background: #eebbc3;
+      color: #232946;
+      border-radius: 6px;
+      font-size: 0.98em;
+      display: inline-block;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f4f6fa;
+    }
+    html, body {
+      height: 100%;
+    }
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 220px;
+      height: 100vh;
+      background: linear-gradient(180deg, #232946 80%, #eebbc3 100%);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 2px 0 12px rgba(35,41,70,0.10);
+      z-index: 100;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #eebbc3 #232946;
+      padding-top: 24px;
+      transition: width 0.2s;
+    }
+    .sidebar::-webkit-scrollbar {
+      width: 8px;
+      background: #232946;
+    }
+    .sidebar::-webkit-scrollbar-thumb {
+      background: #eebbc3;
+      border-radius: 6px;
+    }
+    .sidebar h2 {
+      font-size: 1.4em;
+      font-weight: bold;
+      margin: 0 0 18px 0;
+      letter-spacing: 1px;
+      text-align: center;
+      color: #eebbc3;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #b8c1ec33;
+    }
+    .sidebar .section-title {
+      margin: 18px 0 8px 18px;
+      font-size: 1em;
+      color: #b8c1ec;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .sidebar-list {
+      padding-left: 0;
+      margin: 0 0 0 0;
+      list-style: none;
+    }
+    .sidebar-list li {
+      margin: 0 0 6px 0;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s forwards;
+    }
+    .sidebar-list li a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.08em;
+      padding: 10px 18px 10px 36px;
+      border-radius: 8px 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      transition: background 0.2s, color 0.2s, padding-left 0.2s;
+    }
+    .sidebar-list li a:hover, .sidebar-list li a.active {
+      background: #eebbc3;
+      color: #232946;
+      padding-left: 44px;
+    }
+    .sidebar-list li a::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #b8c1ec;
+      margin-right: 10px;
+      transition: background 0.2s;
+    }
+    .sidebar-list li a:hover::before, .sidebar-list li a.active::before {
+      background: #232946;
+    }
+    .sidebar-list li {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s forwards;
+    }
+    .sidebar-list li:nth-child(1) { animation-delay: 0.05s; }
+    .sidebar-list li:nth-child(2) { animation-delay: 0.10s; }
+    .sidebar-list li:nth-child(3) { animation-delay: 0.15s; }
+    .sidebar-list li:nth-child(4) { animation-delay: 0.20s; }
+    .sidebar-list li:nth-child(5) { animation-delay: 0.25s; }
+    .sidebar-list li:nth-child(6) { animation-delay: 0.30s; }
+    .sidebar-list li:nth-child(7) { animation-delay: 0.35s; }
+    .sidebar-list li:nth-child(8) { animation-delay: 0.40s; }
+    .sidebar-list li:nth-child(9) { animation-delay: 0.45s; }
+    .sidebar-list li:nth-child(10) { animation-delay: 0.50s; }
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .sidebar .section-title {
+      margin: 24px 0 8px 32px;
+      font-size: 1em;
+      color: #b8c1ec;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+    .main {
+      margin-left: 260px;
+      padding: 40px 40px 0 40px;
+    }
+    /* Global table styles */
+    .page-title {
+      font-size: 2em;
+      font-weight: bold;
+      color: #232946;
+      margin-bottom: 24px;
+    }
+    .card-table {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(35,41,70,0.07);
+      padding: 32px 24px;
+      margin-bottom: 40px;
+      animation: fadeInUp 0.7s;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+    }
+    th {
+      background-color: #232946;
+      color: white;
+    }
+    a.button-edit {
+      background-color: #232946;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-right: 8px;
+      transition: background 0.2s;
+    }
+    a.button-edit:hover {
+      background-color: #eebbc3;
+      color: #232946;
+    }
+    button.button-delete {
+      background-color: #dc3545;
+      color: white;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button.button-delete:hover {
+      background-color: #c82333;
+    }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <div class="sidebar" id="sidebar">
+    <h2>Admin Panel</h2>
+    <div class="section-title">Navigation</div>
+    <ul class="sidebar-list" id="sidebar-list">
+      <li><a href="/dashboard" class="{% if request.path == '/dashboard' %}active{% endif %}">Home</a></li>
+    </ul>
+    <div class="section-title">Primary Tables</div>
+    <ul class="sidebar-list">
+      <li><a href="/departments" class="{% if request.path.startswith('/departments') %}active{% endif %}">Departments</a></li>
+      <li><a href="/rooms" class="{% if request.path.startswith('/rooms') %}active{% endif %}">Rooms</a></li>
+      <li><a href="/programs" class="{% if request.path.startswith('/programs') %}active{% endif %}">Programs</a></li>
+      <li><a href="/semesters" class="{% if request.path.startswith('/semesters') %}active{% endif %}">Semesters</a></li>
+      <li><a href="/sessions" class="{% if request.path.startswith('/sessions') %}active{% endif %}">Sessions</a></li>
+      <li><a href="/courses" class="{% if request.path.startswith('/courses') %}active{% endif %}">Courses</a></li>
+      <li><a href="/faculty" class="{% if request.path.startswith('/faculty') %}active{% endif %}">Faculty</a></li>
+      <li><a href="/students" class="{% if request.path.startswith('/students') %}active{% endif %}">Students</a></li>
+    </ul>
+    <div class="section-title">Dependent Tables</div>
+    <ul class="sidebar-list">
+      <li><a href="/offered_programs" class="{% if request.path.startswith('/offered_programs') %}active{% endif %}">Offered Programs</a></li>
+     
+      
+      <li><a href="/current_semester" class="{% if request.path.startswith('/current_semester') %}active{% endif %}">Current Semester</a></li>
+      <li><a href="/time_slots" class="{% if request.path.startswith('/time_slots') %}active{% endif %}">Time Slots</a></li>
+    </ul>
+    <div class="section-title">Reports & Timetables</div>
+    <ul class="sidebar-list">
+      <li><a href="/timetable/room" class="{% if request.path.startswith('/timetable/room') %}active{% endif %}">Room wise Timetable</a></li>
+      <li><a href="/weekly_timetable" class="{% if request.path.startswith('/weekly_timetable') %}active{% endif %}">Weekly Timetable</a></li>
+      <li><a href="/timetable/faculty" class="{% if request.path.startswith('/timetable/faculty') %}active{% endif %}">Faculty wise Timetable</a></li>
+      <li><a href="/timetable/student_report" class="{% if request.path.startswith('/timetable/student_report') %}active{% endif %}">Student wise Timetable</a></li>
+    </ul>
+    <div style="flex:1"></div>
+    <ul class="sidebar-list">
+      <li><a href="/logout" style="color:#eebbc3;">Logout</a></li>
+    </ul>
+  </div>
+  <div class="main">
+    {% block content %}{% endblock %}
+  </div>
+  <script>
+    // Preserve sidebar scroll position on page load and prevent scroll jump
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('sidebar');
+      const sidebarList = document.getElementById('sidebar-list');
+      const activeLink = sidebarList.querySelector('a.active');
+
+      // Restore saved scroll position if available
+      const savedScrollTop = localStorage.getItem('sidebarScrollTop');
+      if (savedScrollTop !== null) {
+        sidebar.scrollTop = parseInt(savedScrollTop, 10);
+      } else if (activeLink) {
+        // Calculate the position to scroll so active link is centered in sidebar view
+        const sidebarRect = sidebar.getBoundingClientRect();
+        const activeRect = activeLink.getBoundingClientRect();
+        const offset = activeRect.top - sidebarRect.top;
+        const scrollTop = sidebar.scrollTop;
+        const scrollTo = scrollTop + offset - sidebar.clientHeight / 2 + activeLink.clientHeight / 2;
+
+        // Only scroll if active link is not fully visible in sidebar viewport
+        const isFullyVisible = activeRect.top >= sidebarRect.top && activeRect.bottom <= sidebarRect.bottom;
+        if (!isFullyVisible) {
+          sidebar.scrollTop = scrollTo;
+        }
+      }
+
+      // Save scroll position on scroll event
+      sidebar.addEventListener('scroll', function() {
+        localStorage.setItem('sidebarScrollTop', sidebar.scrollTop);
+      });
+    });
+  </script>
+</body>
+</html>

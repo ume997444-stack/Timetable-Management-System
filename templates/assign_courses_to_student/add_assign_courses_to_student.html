@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assign Course to Student</title>
+    <script>
+    function filterSemesters() {
+        var programId = document.getElementById('ProgramID').value;
+        var options = document.querySelectorAll('#CurrentSemesterID option');
+        options.forEach(function(opt) {
+            opt.style.display = (opt.getAttribute('data-program') === programId) ? '' : 'none';
+        });
+        // Select the first visible option
+        for (var i=0; i<options.length; i++) {
+            if (options[i].style.display === '') {
+                options[i].selected = true;
+                break;
+            }
+        }
+    }
+    window.onload = function() {
+        document.getElementById('ProgramID').onchange = filterSemesters;
+        filterSemesters();
+    };
+    </script>
+</head>
+<body>
+    <h1>Assign Course to Student</h1>
+    <form method="POST" action="{{ url_for('add_assign_courses_to_student') }}">
+        <label for="StudentID">Student:</label>
+        <select name="StudentID" id="StudentID" required>
+            {% for s in students %}
+                <option value="{{ s.StudentID }}">{{ s.FirstName }} {{ s.LastName }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="ProgramID">Program:</label>
+        <select name="ProgramID" id="ProgramID" required>
+            {% for p in programs %}
+                <option value="{{ p.ProgramID }}">{{ p.ProgramName }} ({{ p.StartYear }}-{{ p.EndYear }})</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="CurrentSemesterID">Current Semester:</label>
+        <select name="CurrentSemesterID" id="CurrentSemesterID" required>
+            {% for cs in current_semesters %}
+                <option value="{{ cs.CurrentSemesterID }}" data-program="{{ cs.ProgramID }}">
+                    {{ cs.ProgramName }} - {{ cs.SemesterName }}
+                </option>
+            {% endfor %}
+        </select><br>
+
+        <label for="CourseID">Course:</label>
+        <select name="CourseID" id="CourseID" required>
+            {% for c in courses %}
+                <option value="{{ c.CourseID }}">{{ c.CourseName }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="Allowed">Allowed:</label>
+        <select name="Allowed" id="Allowed">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+        <br>
+
+        <label for="Is_Repeater">Is Repeater:</label>
+        <select name="Is_Repeater" id="Is_Repeater">
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+        </select>
+        <br>
+
+        <button type="submit">Assign</button>
+    </form>
+</body>
+</html>

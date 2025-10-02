@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Add Session{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block content %}
+    <div class="page-title">Add Session</div>
+    <div class="card-table">
+        <form method="POST" action="{{ url_for('add_session') }}">
+            <div class="mb-3">
+                <label for="StartYear" class="form-label">Start Year:</label>
+                <input type="number" id="StartYear" name="StartYear" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="EndYear" class="form-label">End Year:</label>
+                <input type="number" id="EndYear" name="EndYear" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-success">Add Session</button>
+        </form>
+    </div>
+{% endblock %}

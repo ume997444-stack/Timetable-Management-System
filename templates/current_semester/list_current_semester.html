@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}List Current Semesters{% endblock %}
+
+{% block head %}
+<style>
+    .page-title {
+        font-size: 2em;
+        font-weight: bold;
+        color: #232946;
+        margin-bottom: 24px;
+    }
+    .card-table {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(35,41,70,0.07);
+        padding: 32px 24px;
+        margin-bottom: 40px;
+        animation: fadeInUp 0.7s;
+    }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .filter-bar {
+        margin-bottom: 18px;
+        padding: 8px 16px;
+        background: #eebbc3;
+        color: #232946;
+        border-radius: 6px;
+        font-size: 0.98em;
+        display: inline-block;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: center;
+    }
+    th {
+        background-color: #232946;
+        color: white;
+    }
+    a.button-edit {
+        background-color: #232946;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        margin-right: 8px;
+        transition: background 0.2s;
+    }
+    a.button-edit:hover {
+        background-color: #eebbc3;
+        color: #232946;
+    }
+    button.button-delete {
+        background-color: #dc3545;
+        color: white;
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    button.button-delete:hover {
+        background-color: #c82333;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="page-title">List of Current Semesters</div>
+    <div class="card-table">
+        <div class="filter-bar">Filter: <input type="text" placeholder="Search current semester..." style="padding:4px 8px; border-radius:4px; border:1px solid #ccc;"> <a href="{{ url_for('add_current_semester') }}" class="button-edit">Add Current Semester</a></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Program</th>
+                    <th>Semester</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for semester in current_semesters %}
+                    <tr>
+                        <td>{{ semester.ProgramName }}</td>
+                        <td>{{ semester.SemesterName }}</td>
+                        <td>{{ semester.StartDate }}</td>
+                        <td>{{ semester.EndDate }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('delete_current_semester', id=semester.CurrentSemesterID) }}" style="display:inline;">
+                                <button type="submit" class="button-delete" onclick="return confirm('Are you sure you want to delete this current semester?');">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Add Timetable{% endblock %}
+
+{% block head %}
+<style>
+    .page-title {
+        font-size: 2em;
+        font-weight: bold;
+        color: #232946;
+        margin-bottom: 24px;
+    }
+    .card-form {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(35,41,70,0.07);
+        padding: 32px 24px;
+        margin-bottom: 40px;
+        animation: fadeInUp 0.7s;
+    }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #232946;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1em;
+    }
+    .btn-submit {
+        background-color: #232946;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .btn-submit:hover {
+        background-color: #eebbc3;
+        color: #232946;
+    }
+    .back-link {
+        color: #232946;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        margin-top: 20px;
+    }
+    .back-link:hover {
+        color: #eebbc3;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-title">Add Timetable</div>
+    <div class="card-form">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        <form method="post" id="timetableForm">
+            <div class="form-group">
+                <label>Session</label>
+                <select id="session" name="SessionID" class="form-control" required>
+                    <option value="">-- Select Session --</option>
+                    {% for s in sessions %}
+                        <option value="{{ s.SessionID }}">{{ s.StartYear }} - {{ s.EndYear }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Department</label>
+                <select id="department" name="DepartmentID" class="form-control" required>
+                    <option value="">-- Select Department --</option>
+                    {% for dept in departments %}
+                        <option value="{{ dept.DepartmentID }}">{{ dept.DepartmentName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Program</label>
+                <select id="program" name="ProgramID" class="form-control" required>
+                    <option value="">-- Select Program --</option>
+                    {% for p in programs %}
+                        <option value="{{ p.ProgramID }}">{{ p.ProgramName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Course</label>
+                <select id="course" name="CourseID" class="form-control" required>
+                    <option value="">-- Select Course --</option>
+                    {% for c in courses %}
+                        <option value="{{ c.CourseID }}">{{ c.CourseName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Day of Week</label>
+                <select name="DayOfWeek" class="form-control" required>
+                    {% for d in days %}
+                    <option value="{{ d }}">{{ d }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Room -->
+        <div class="mb-3">
+            <label>Room</label>
+            <select name="RoomID" class="form-control" required>
+                {% for room in rooms %}
+                    <option value="{{ room.RoomID }}">{{ room.RoomNumber }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Faculty -->
+        <div class="mb-3">
+            <label>Faculty</label>
+            <select name="FacultyID" class="form-control" required>
+                {% for f in faculty %}
+                    <option value="{{ f.FacultyID }}">{{ f.FirstName }} {{ f.LastName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Slot -->
+        <div class="mb-3">
+            <label>Time Slot</label>
+            <select name="SlotID" class="form-control" required>
+                {% for slot in slots %}
+                    <option value="{{ slot.SlotID }}">
+                        {{ slot.StartTime }} - {{ slot.EndTime }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Add Timetable</button>
+    </form>
+
+    </div>
+</div>
+{% endblock %}
+
+<script type="text/javascript">
+    // Function to populate departments based on session
+    function populateDepartments(sessionId) {
+        console.log('populateDepartments called with sessionId:', sessionId);
+        if (!sessionId) {
+            document.getElementById("department").innerHTML = '<option value="">-- Select Department --</option>';
+            document.getElementById("program").innerHTML = '<option value="">-- Select Program --</option>';
+            document.getElementById("course").innerHTML = '<option value="">-- Select Course --</option>';
+            return;
+        }
+        fetch(`/api/departments/${sessionId}`)
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(departments => {
+                console.log('Departments data:', departments);
+                var deptSelect = document.getElementById("department");
+                deptSelect.innerHTML = '<option value="">-- Select Department --</option>';
+                departments.forEach(function(dept) {
+                    deptSelect.innerHTML += `<option value="${dept.DepartmentID}">${dept.DepartmentName}</option>`;
+                });
+                // Clear program and course dropdowns
+                document.getElementById("program").innerHTML = '<option value="">-- Select Program --</option>';
+                document.getElementById("course").innerHTML = '<option value="">-- Select Course --</option>';
+            })
+            .catch(error => console.error('Error fetching departments:', error));
+    }
+
+    // Function to populate programs based on session and department
+    function populatePrograms(sessionId, deptId) {
+        if (!sessionId || !deptId) {
+            document.getElementById("program").innerHTML = '<option value="">-- Select Program --</option>';
+            document.getElementById("course").innerHTML = '<option value="">-- Select Course --</option>';
+            return;
+        }
+        fetch(`/api/programs/${sessionId}/${deptId}`)
+            .then(response => response.json())
+            .then(data => {
+                var progSelect = document.getElementById("program");
+                progSelect.innerHTML = '<option value="">-- Select Program --</option>';
+                data.forEach(function(prog) {
+                    progSelect.innerHTML += `<option value="${prog.ProgramID}">${prog.ProgramName}</option>`;
+                });
+                // Clear course dropdown
+                document.getElementById("course").innerHTML = '<option value="">-- Select Course --</option>';
+            })
+            .catch(error => console.error('Error fetching programs:', error));
+    }
+
+    // Function to populate courses based on department
+    function populateCourses(deptId) {
+        if (!deptId) {
+            document.getElementById("course").innerHTML = '<option value="">-- Select Course --</option>';
+            return;
+        }
+        fetch(`/api/courses/${deptId}`)
+            .then(response => response.json())
+            .then(data => {
+                var courseSelect = document.getElementById("course");
+                courseSelect.innerHTML = '<option value="">-- Select Course --</option>';
+                data.forEach(function(course) {
+                    courseSelect.innerHTML += `<option value="${course.CourseID}">${course.CourseName}</option>`;
+                });
+            })
+            .catch(error => console.error('Error fetching courses:', error));
+    }
+
+    // Event listeners
+    document.getElementById("session").addEventListener("change", function() {
+        var sessionId = this.value;
+        populateDepartments(sessionId);
+    });
+
+    document.getElementById("department").addEventListener("change", function() {
+        var sessionId = document.getElementById("session").value;
+        var deptId = this.value;
+        populatePrograms(sessionId, deptId);
+    });
+
+    document.getElementById("program").addEventListener("change", function() {
+        var deptId = document.getElementById("department").value;
+        populateCourses(deptId);
+    });
+</script>
+
+</body>
+</html>

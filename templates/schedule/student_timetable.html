@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Student Timetable</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --info-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --border-radius: 12px;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #2c3e50;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(180deg); }
+        }
+
+        .student-info {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            border: none;
+        }
+
+        .timetable-grid {
+            display: grid;
+            grid-template-columns: 160px repeat(5, 1fr);
+            gap: 2px;
+            background: #e9ecef;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .timetable-grid > div {
+            background-color: white;
+            padding: 1rem 0.75rem;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 80px;
+            transition: all 0.2s ease;
+        }
+
+        .timetable-header {
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 700;
+            text-align: center;
+            font-size: 1rem;
+            padding: 1rem 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .time-slot {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-weight: 600;
+            color: #495057;
+            border-left: 4px solid #007bff;
+        }
+
+        .course-cell {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(33, 150, 243, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--success-gradient);
+        }
+
+        .course-cell:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+        }
+
+        .course-name {
+            font-weight: 700;
+            color: #1565c0;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .course-name i {
+            color: #2196f3;
+        }
+
+        .time-info {
+            font-size: 0.8rem;
+            color: #546e7a;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .faculty-info {
+            font-size: 0.8rem;
+            color: #424242;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .room-info {
+            font-size: 0.8rem;
+            color: #424242;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .no-schedule {
+            color: #6c757d;
+            font-style: italic;
+            font-size: 1.1rem;
+            padding: 2rem 0;
+            text-align: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: var(--border-radius);
+            border: 2px dashed #dee2e6;
+        }
+
+        .filter-card {
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            border-radius: var(--border-radius);
+            background: white;
+            padding: 2rem;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--secondary-gradient);
+        }
+
+        .filter-label {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            background: var(--primary-gradient);
+        }
+
+        @media (max-width: 768px) {
+            .timetable-grid {
+                grid-template-columns: 120px repeat(5, 1fr);
+                font-size: 0.8rem;
+            }
+
+            .course-cell {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2"><i class="fas fa-calendar-alt me-3"></i>Student Timetable</h1>
+                    <p class="mb-0 opacity-75">Your personalized class schedule</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <i class="fas fa-user-graduate" style="font-size: 4rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Info -->
+    {% if student %}
+    <div class="student-info">
+        <div class="row">
+            <div class="col-md-6">
+                <h4><i class="fas fa-user me-2"></i>{{ student.FirstName }} {{ student.LastName }}</h4>
+                <p class="mb-1"><strong>Enrollment No:</strong> {{ student.EnrollmentNo }}</p>
+                <p class="mb-1"><strong>Email:</strong> {{ student.Email }}</p>
+            </div>
+            <div class="col-md-6">
+                {% if student.ProgramName %}
+                <p class="mb-1"><strong>Program:</strong> {{ student.ProgramName }}</p>
+                {% endif %}
+                {% if student.SemesterName %}
+                <p class="mb-1"><strong>Semester:</strong> {{ student.SemesterName }}</p>
+                {% endif %}
+                {% if student.DepartmentName %}
+                <p class="mb-0"><strong>Department:</strong> {{ student.DepartmentName }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Filter Form -->
+    <div class="filter-card">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="program_id" class="filter-label">
+                    <i class="fas fa-graduation-cap"></i> Program
+                </label>
+                <select name="program_id" id="program_id" class="form-select">
+                    <option value="">All Programs</option>
+                    {% for p in programs %}
+                        <option value="{{ p.ProgramID }}" {% if p.ProgramID == program_id %}selected{% endif %}>{{ p.ProgramName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="semester_id" class="filter-label">
+                    <i class="fas fa-calendar-alt"></i> Semester
+                </label>
+                <select name="semester_id" id="semester_id" class="form-select">
+                    <option value="">All Semesters</option>
+                    {% for s in semesters %}
+                        <option value="{{ s.SemesterID }}" {% if s.SemesterID == semester_id %}selected{% endif %}>{{ s.SemesterName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="day" class="filter-label">
+                    <i class="fas fa-filter"></i> Day
+                </label>
+                <select name="day" id="day" class="form-select">
+                    <option value="All" {% if day == 'All' %}selected{% endif %}>All Days</option>
+                    <option value="Monday" {% if day == 'Monday' %}selected{% endif %}>Monday</option>
+                    <option value="Tuesday" {% if day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                    <option value="Wednesday" {% if day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                    <option value="Thursday" {% if day == 'Thursday' %}selected{% endif %}>Thursday</option>
+                    <option value="Friday" {% if day == 'Friday' %}selected{% endif %}>Friday</option>
+                    <option value="Saturday" {% if day == 'Saturday' %}selected{% endif %}>Saturday</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-2"></i>Apply Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Timetable Grid -->
+    <div class="card" style="box-shadow: var(--card-shadow); border-radius: var(--border-radius); border: none;">
+        <div class="card-body">
+            {% if schedules %}
+                <div class="timetable-grid" role="table" aria-label="Student timetable">
+                    <!-- Header Row: Time slots -->
+                    <div class="timetable-header">
+                        <i class="fas fa-clock me-2"></i>Day / Time
+                    </div>
+                    {% for time_slot in time_slots %}
+                        {% set slot_start = '%02d:%02d' % (time_slot.StartTime.seconds // 3600, (time_slot.StartTime.seconds % 3600) // 60) %}
+                        {% set slot_end = '%02d:%02d' % (time_slot.EndTime.seconds // 3600, (time_slot.EndTime.seconds % 3600) // 60) %}
+                        <div class="timetable-header">
+                            <strong>{{ slot_start }} - {{ slot_end }}</strong>
+                        </div>
+                    {% endfor %}
+
+                    <!-- Data Rows: Days and their schedules -->
+                    {% for day_name in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] %}
+                        <div class="time-slot">
+                            <i class="fas fa-calendar-day me-1"></i> {{ day_name }}
+                        </div>
+                        {% for time_slot in time_slots %}
+                            {% set slot_start = '%02d:%02d' % (time_slot.StartTime.seconds // 3600, (time_slot.StartTime.seconds % 3600) // 60) %}
+                            {% set slot_end = '%02d:%02d' % (time_slot.EndTime.seconds // 3600, (time_slot.EndTime.seconds % 3600) // 60) %}
+                            <div>
+                                {% set classes = [] %}
+                                {% for schedule in schedules %}
+                                    {% set start_str = '%02d:%02d' % (schedule.StartTime.seconds // 3600, (schedule.StartTime.seconds % 3600) // 60) %}
+                                    {% set end_str = '%02d:%02d' % (schedule.EndTime.seconds // 3600, (schedule.EndTime.seconds % 3600) // 60) %}
+                                    {% if schedule.DayOfWeek == day_name and start_str == slot_start %}
+                                        {% set _ = classes.append(schedule) %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if classes %}
+                                    {% for cls in classes %}
+                                        <div class="course-cell" tabindex="0" aria-label="{{ cls.CourseName }} from {{ start_str }} to {{ end_str }} in room {{ cls.RoomNumber }} with {{ cls.FirstName }} {{ cls.LastName }}">
+                                            <div class="course-name">
+                                                <i class="fas fa-book"></i>
+                                                {{ cls.CourseName }}
+                                            </div>
+<div class="time-info">
+    {{ start_str }} - {{ end_str }}
+</div>
+                                            <div class="faculty-info">
+                                                <i class="fas fa-user"></i>
+                                                {{ cls.FirstName }} {{ cls.LastName }}
+                                            </div>
+                                            <div class="room-info">
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                Room {{ cls.RoomNumber }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="text-muted">-</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-schedule">
+                    <i class="fas fa-calendar-times mb-3"></i>
+                    <p class="mb-0">No scheduled classes found{% if day != 'All' %} on {{ day }}{% endif %}.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

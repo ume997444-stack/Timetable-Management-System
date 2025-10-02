@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Current Semester</title>
+</head>
+<body>
+    <h1>Add Current Semester</h1>
+    <form method="POST" action="{{ url_for('add_current_semester') }}">
+        <label for="ProgramID">Program:</label>
+        <select id="ProgramID" name="ProgramID" required>
+            {% for program in programs %}
+                <option value="{{ program.ProgramID }}">{{ program.ProgramName }}</option>
+            {% endfor %}
+        </select><br>
+        
+        <label for="SemesterID">Semester:</label>
+        <select id="SemesterID" name="SemesterID" required>
+            {% for semester in semesters %}
+                <option value="{{ semester.SemesterID }}">{{ semester.SemesterName }}</option>
+            {% endfor %}
+        </select><br>
+        
+        <label for="StartDate">Start Date:</label>
+        <input type="date" id="StartDate" name="StartDate" required><br>
+        
+        <label for="EndDate">End Date:</label>
+        <input type="date" id="EndDate" name="EndDate" required><br>
+        
+        <button type="submit">Add Current Semester</button>
+    </form>
+</body>
+</html>

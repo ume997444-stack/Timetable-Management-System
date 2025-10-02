@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Add Semester{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block content %}
+    <div class="page-title">Add Semester</div>
+    <div class="card-table">
+        <form method="POST" action="{{ url_for('add_semester') }}">
+            <div class="mb-3">
+                <label for="SemesterName" class="form-label">Semester Name:</label>
+                <input type="text" id="SemesterName" name="SemesterName" class="form-control" required>
+            </div>
+            
+            <button type="submit" class="btn btn-success">Add Semester</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,86 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <
+</head>
+
+</html>
+
+{% extends "base.html" %}
+
+{% block title %}Add Room{% endblock %}
+
+{% block head %}
+<style>
+    .page-title {
+        font-size: 2em;
+        font-weight: bold;
+        color: #232946;
+        margin-bottom: 24px;
+    }
+    .card-form {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(35,41,70,0.07);
+        padding: 32px 24px;
+        margin-bottom: 40px;
+        animation: fadeInUp 0.7s;
+    }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #232946;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1em;
+    }
+    .btn-submit {
+        background-color: #232946;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .btn-submit:hover {
+        background-color: #eebbc3;
+        color: #232946;
+    }
+    .back-link {
+        color: #232946;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+        margin-top: 20px;
+    }
+    .back-link:hover {
+        color: #eebbc3;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-title">Add Room</div>
+    <div class="card-form">
+        <form method="POST" action="{{ url_for('add_room') }}">
+            <div class="form-group">
+                <label for="RoomNumber">Room Number</label>
+                <input type="text" class="form-control" id="RoomNumber" name="RoomNumber" required>
+            </div>
+            <button type="submit" class="btn-submit">Add Room</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

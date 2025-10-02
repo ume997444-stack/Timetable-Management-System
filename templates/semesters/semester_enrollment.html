@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Semester Enrollment</title>
+</head>
+<body>
+    <h1>Enrollment for {{ semester.SemesterName }}</h1>
+    <p>Total Students Enrolled: {{ count.TotalStudents }}</p>
+    <a href="{{ url_for('list_semesters') }}">Back to Semesters</a>
+</body>
+</html>

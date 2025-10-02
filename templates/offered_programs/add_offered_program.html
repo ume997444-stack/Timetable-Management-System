@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Offered Program to Department</title>
+</head>
+<body>
+    <h1>Add Offered Program to Department</h1>
+    <form method="POST" action="{{ url_for('add_offered_program') }}">
+        <label for="ProgramID">Program ID:</label>
+        <input type="text" id="ProgramID" name="ProgramID" placeholder="Enter Program ID" required><br>
+
+        <label for="ProgramName">Program Name:</label>
+        <input type="text" id="ProgramName" name="ProgramName" required><br>
+        
+        <label for="SessionID">Session:</label>
+        <select id="SessionID" name="SessionID" required>
+            {% for session in sessions %}
+                <option value="{{ session['SessionID'] }}">{{ session['StartYear'] }} - {{ session['EndYear'] }}</option>
+            {% endfor %}
+        </select><br>
+        
+        <label for="DepartmentID">Department:</label>
+        <select id="DepartmentID" name="DepartmentID" required>
+            {% for dept in departments %}
+                <option value="{{ dept['DepartmentID'] }}">{{ dept['DepartmentName'] }}</option>
+            {% endfor %}
+        </select><br>
+        
+        <button type="submit">Add Program</button>
+    </form>
+</body>
+</html>

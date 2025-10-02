@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Assigned Course</title>
+</head>
+<body>
+    <h1>Edit Assigned Course</h1>
+    <form method="post">
+        <label>Allowed:</label>
+        <select name="Allowed">
+            <option value="Yes" {% if assignment.Allowed == 'Yes' %}selected{% endif %}>Yes</option>
+            <option value="No" {% if assignment.Allowed == 'No' %}selected{% endif %}>No</option>
+        </select>
+        <br>
+        <label>Is Repeater:</label>
+        <select name="Is_Repeater">
+            <option value="No" {% if assignment.Is_Repeater == 'No' %}selected{% endif %}>No</option>
+            <option value="Yes" {% if assignment.Is_Repeater == 'Yes' %}selected{% endif %}>Yes</option>
+        </select>
+        <br>
+        <input type="submit" value="Update">
+    </form>
+    <a href="{{ url_for('list_assign_courses_to_student') }}">Back to List</a>
+</body>
+</html>

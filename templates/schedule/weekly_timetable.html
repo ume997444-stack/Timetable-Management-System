@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Timetable</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .timetable-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        .timetable-header {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .timetable-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .table th {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 15px;
+        }
+        .day-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+        }
+        .class-slot {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            padding: 8px;
+            margin: 3px;
+            min-height: 100px;
+            transition: all 0.3s ease;
+        }
+        .class-slot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .course-name {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+        .teacher-name {
+            color: #6c757d;
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+        .room-info {
+            color: #17a2b8;
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+        .semester-info {
+            color: #17a2b8;
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+        .time-info {
+            color: #dc3545;
+            font-size: 10px;
+            margin-bottom: 6px;
+        }
+        .free-slot {
+            background: #d4edda;
+            color: #155724;
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .class-slot {
+                min-height: 90px;
+                padding: 6px;
+            }
+            .course-name {
+                font-size: 11px;
+            }
+            .teacher-name, .room-info, .time-info {
+                font-size: 9px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<div class="timetable-container">
+    <div class="timetable-header">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-primary mb-0">📅 Weekly Timetable</h1>
+        </div>
+    <form method="get">
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label>Session</label>
+                <select name="session_id" class="form-control">
+                    <option value="">All Sessions</option>
+                    {% for s in sessions %}
+                        <option value="{{ s.SessionID }}" {% if selected_session==s.SessionID %}selected{% endif %}>{{ s.StartYear }}-{{ s.EndYear }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>Program</label>
+                <select name="program_id" class="form-control">
+                    <option value="">All Programs</option>
+                    {% for p in programs %}
+                        <option value="{{ p.ProgramID }}" {% if selected_program==p.ProgramID %}selected{% endif %}>{{ p.ProgramName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>Semester</label>
+                <select name="semester_id" class="form-control">
+                    <option value="">All Semesters</option>
+                    {% for s in semesters %}
+                        <option value="{{ s.SemesterID }}" {% if selected_semester==s.SemesterID %}selected{% endif %}>{{ s.SemesterName }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>&nbsp;</label>
+                <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+            </div>
+        </div>
+    </form>
+    {% for sem_id, sem_data in timetable_by_semester.items() %}
+        <h3 class="text-center mt-4">{{ sem_data.SemesterName }}</h3>
+        <div class="timetable-table">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="day-header">Day / Time Slot</th>
+                        {% for slot in time_slots %}
+                            <th>
+                                {% if slot.StartTime.__class__.__name__ == 'time' %}
+                                    {{ slot.StartTime.strftime('%H:%M') }} - {{ slot.EndTime.strftime('%H:%M') }}
+                                {% elif slot.StartTime.__class__.__name__ == 'timedelta' %}
+                                    {{ (slot.StartTime.total_seconds() // 3600)|int }}:{{ '%02d' % ((slot.StartTime.total_seconds() % 3600) // 60)|int }}
+                                    -
+                                    {{ (slot.EndTime.total_seconds() // 3600)|int }}:{{ '%02d' % ((slot.EndTime.total_seconds() % 3600) // 60)|int }}
+                                {% else %}
+                                    {{ slot.StartTime|string }} - {{ slot.EndTime|string }}
+                                {% endif %}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day in days %}
+                    <tr>
+                        <td class="day-header">{{ day }}</td>
+                        {% for slot in time_slots %}
+                            {% set entry = sem_data.timetable.get(day, {}).get(slot.SlotID) %}
+                            <td>
+                                {% if entry %}
+                                    <div class="class-slot">
+                                        <div class="course-name">{{ entry.CourseName }}</div>
+                                        <div class="teacher-name">👨‍🏫 {{ entry.FacultyName }}</div>
+                                        <div class="room-info">🏫 Room: {{ entry.RoomNumber }}</div>
+                                        <div class="department">📚 Department: {{ entry.departmentName if entry.departmentName else '' }}</div>
+                                        <div class="program-info">📚 Program: {{ entry.programName if entry.programName else '' }}</div>
+                                    </div>
+                                {% else %}
+                                    <div class="free-slot">✅ Free</div>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Session</title>
+</head>
+<body>
+    <h1>Update Session</h1>
+    <form method="POST" action="{{ url_for('update_session', id=session.SessionID) }}">
+        <label for="StartYear">Start Year:</label>
+        <input type="number" id="StartYear" name="StartYear" value="{{ session.StartYear }}" required><br>
+        
+        <label for="EndYear">End Year:</label>
+        <input type="number" id="EndYear" name="EndYear" value="{{ session.EndYear }}" required><br>
+        
+        <button type="submit">Update Session</button>
+    </form>
+</body>
+</html>
